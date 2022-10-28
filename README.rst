@@ -15,14 +15,13 @@ pymodaq_plugins_template (??? Instruments)
    :target: https://github.com/PyMoDAQ/pymodaq_plugins_thorlabs
    :alt: Publication Status
 
-Set of PyMoDAQ plugins for instruments from ???
+Set of PyMoDAQ plugins for instruments from Rohde & Schwarz
 
 
 Authors
 =======
 
-* First Author  (myemail@xxx.org)
-* Other author (myotheremail@xxx.org)
+* Aurore Finco  (aurore.finco@umontpellier.fr)
 
 .. if needed use this field
 
