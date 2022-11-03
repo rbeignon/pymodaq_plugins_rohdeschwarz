@@ -1,13 +1,15 @@
 from pymodaq.control_modules.move_utility_classes import DAQ_Move_base, comon_parameters_fun, main  # common set of parameters for all actuators
 from pymodaq.utils.daq_utils import ThreadCommand # object used to send info back to the main thread
 from pymodaq.utils.parameter import Parameter
+from . import ureg
+from pymodaq_plugins_rohdeschwarz.hardware.SMA_SMB_MW_sources import MWsource
 
 class PythonWrapperOfYourInstrument:
     #  TODO Replace this fake class with the import of the real python wrapper of your instrument
     pass
 
 
-class DAQ_Move_Template(DAQ_Move_base):
+class DAQ_Move_RSMWsource(DAQ_Move_base):
     """Plugin for the Template Instrument
 
     This object inherits all functionality to communicate with PyMoDAQ Module through inheritance via DAQ_Move_base
@@ -31,7 +33,7 @@ class DAQ_Move_Template(DAQ_Move_base):
     def ini_attributes(self):
         #  TODO declare the type of the wrapper (and assign it to self.controller) you're going to use for easy
         #  autocompletion
-        self.controller: PythonWrapperOfYourInstrument = None
+        self.controller: MWsource = None
 
         #TODO declare here attributes you want/need to init with a default value
         pass
