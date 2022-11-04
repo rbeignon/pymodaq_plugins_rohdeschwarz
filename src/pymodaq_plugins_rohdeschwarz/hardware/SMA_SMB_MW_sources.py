@@ -38,7 +38,7 @@ class MWsource:
 
         Parameters
         ----------
-        visa_address : str
+        visa_address: str
             Visa address of the device
         """
         self._address = visa_address
@@ -73,7 +73,7 @@ class MWsource:
 
         Parameters
         ----------
-        command_str : str
+        command_str: str
             the command to send to the device
         """
         self._connection.write(command_str)
@@ -101,10 +101,8 @@ class MWsource:
 
         Returns
         --------
-        str
-            either "cw", "list" or "sweep"
-        bool
-            True if MW is on, False otherwise
+        str: either "cw", "list" or "sweep"
+        bool: True if MW is on, False otherwise
         """
         is_running = bool(int(float(self._connection.query("OUTP:STAT?"))))
         mode = self._connection.query(":FREQ:MODE?").strip("\n").lower()
@@ -149,8 +147,8 @@ class MWsource:
 
         Returns
         --------
-        [pint Quantity, or 1D ndarray of pint Quantities]
-            Frequencies currently set in the device, in Hz
+        [pint Quantity, or 1D ndarray of pint Quantities]: Frequencies
+            currently set in the device, in Hz
         """
         mode, is_running = self.get_status()
         if "cw" in mode:
@@ -190,19 +188,16 @@ class MWsource:
 
         Parameters
         ----------
-        frequency : pint Quantity
+        frequency: pint Quantity
             CW frequency to set (will be converted in Hz)
-        power : pint Quantity
+        power: pint Quantity
             CW power to set in dBm (will be converted in dBm)
 
         Returns
         --------
-        str
-            current mode, should be "cw"
-        pint Quantity 
-            frequency currently set in the device
-        pint Quantity
-            power currently set in the device
+        str: current mode, should be "cw"
+        pint Quantity: frequency currently set in the device
+        pint Quantity: power currently set in the device
         """
         mode, is_running = self.get_status()
         if is_running:
@@ -258,12 +253,9 @@ class MWsource:
 
         Returns
         --------
-        str
-            current mode, should be "list"
-        pint Quantity array
-            frequency list currently set in the device
-        pint Quantity array
-            power list currently set in the device
+        str: current mode, should be "list"
+        pint Quantity array: frequency list currently set in the device
+        pint Quantity array: power list currently set in the device
         """
         
         mode, is_running = self.get_status()
@@ -341,16 +333,11 @@ class MWsource:
 
         Returns
         --------
-        str
-            current mode, should be "list"
-        pint Quantity 
-            Sweep start frequency currently set in the device
-        pint Quantity 
-            Sweep stop frequency currently set in the device
-        pint Quantity 
-            Sweep frequency step currently set in the device
-        pint Quantity
-            power list currently set in the device
+        str: current mode, should be "list"
+        pint Quantity: Sweep start frequency currently set in the device
+        pint Quantity: Sweep stop frequency currently set in the device
+        pint Quantity: Sweep frequency step currently set in the device
+        pint Quantity: Power list currently set in the device
         """
 
         mode, is_running = self.get_status()
@@ -418,8 +405,7 @@ class MWsource:
 
         Returns
         --------
-        str
-            "rising" or "falling"
+        str: "rising" or "falling"
         """
         polarity = self._connection.query(":TRIG1:SLOP?")
         if "POS" in polarity:
