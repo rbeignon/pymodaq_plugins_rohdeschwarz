@@ -43,6 +43,11 @@ class MWsource:
         """
         self._address = visa_address
 
+    @property
+    def model(self):
+        """Returns the ID string provided by the device.
+        """
+        return self._model
     
     def open_communication(self):    
         """Initiate the communication with the device.
@@ -58,7 +63,7 @@ class MWsource:
         self._model = self._connection.query("*IDN?").split(",")[1]
         self._command_wait("*CLS")
         self._command_wait("*RST")
-        return
+        return True
     
 
     def close_communication(self):
