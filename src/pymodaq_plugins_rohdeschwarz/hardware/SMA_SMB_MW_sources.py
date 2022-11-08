@@ -214,7 +214,6 @@ class MWsource:
 
         # Set CW frequency if provided
         if frequency is not None:
-            freq_val = 
             self._command_wait(":FREQ {:.6f~P}".format(
                 frequency.to(ureg.GHz)))
 
