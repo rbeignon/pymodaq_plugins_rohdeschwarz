@@ -5,7 +5,7 @@ from pymodaq.control_modules.move_utility_classes import DAQ_Move_base, \
 from pymodaq.utils.daq_utils import ThreadCommand
 from pymodaq.utils.parameter import Parameter
 # shared UnitRegistry from pint initialized in __init__.py
-from . import ureg, Q_
+from pymodaq_plugins_rohdeschwarz import ureg, Q_
 from pymodaq_plugins_rohdeschwarz.hardware.SMA_SMB_MW_sources import MWsource
 
 class DAQ_Move_RSMWsource(DAQ_Move_base):
