@@ -273,7 +273,7 @@ class MWsource:
                 print("Number of frequencies and power values not matching!")
                 return
             
-            self._connection.write(":LIST:SEL "My_list"")
+            self._connection.write(':LIST:SEL "My_list"')
 
             freq_str = ""
             for freq in frequency:
