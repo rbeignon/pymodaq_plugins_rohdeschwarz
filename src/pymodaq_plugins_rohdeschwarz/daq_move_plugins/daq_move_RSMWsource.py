@@ -42,7 +42,7 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         -------
         float: The CW frequency in Hz.
         """
-        mode, is_running = self._controller.get_status()
+        mode, is_running = self.controller.get_status()
         if mode == "cw":
             frequency = self.controller.get_frequency()
         else:
@@ -68,10 +68,14 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
             been changed by the user
         """
         if param.name() == "address":
-           self.controller.address = param.value()
+            self.controller.set_address(param.value())
         elif param.name() == "power":
             power_to_set = Q_(param.value(), ureg.dBm)
-            self.controller.set_cw_params(power=power_to_set) 
+            self.controller.set_cw_params(power=power_to_set)
+        # timeout if in comon_parameters
+        elif param.name() == "timeout":
+            timeout_to_set = Q_(param.value(), ureg.second)
+            self.controller.set_timeout(timeout=timeout_to_set) 
         
 
     def ini_stage(self, controller=None):
@@ -92,19 +96,24 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
 
         self.ini_stage_init(old_controller=controller,
                             new_controller=MWsource())
-
-        initialized = self.controller.open_communication()
+        
+        initialized = self.controller.open_communication(
+            address=self.settings.child("address").value())
         info = self.controller.model
         if initialized:
             # We go to CW mode
             self.controller.set_cw_params()
             # read the params
-            self.settings.child("address").setValue(self.controller.address)
+            self.settings.child("address").setValue(
+                self.controller.get_address())
             self.settings.child("power").setValue(
-                self.controller.get_power.magnitude)
+                self.controller.get_power().magnitude)
+            self.settings.child("timeout").setValue(
+             self.controller.get_timeout().to(ureg.second).magnitude)
             
         return info, initialized
 
+    
     def move_abs(self, value):
         """ Move the actuator to the absolute target defined by value.
 
@@ -123,7 +132,9 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         self.controller.cw_on()
         
         self.emit_status(ThreadCommand('Update_Status',
-                        ['CW frequency set to {freq_to_set.to(ureg.MHz)}']))
+                [f'CW frequency set to {freq_to_set.to(ureg.MHz):.3f~P}']))
+        
+        self.target_position = value
 
 
     def move_rel(self, value):
@@ -139,12 +150,11 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         self.target_value = value + self.current_position
         value = self.set_position_relative_with_scaling(value)
 
-        
         freq_to_set = self.target_value * ureg.Hz
         self.controller.set_cw_params(frequency=freq_to_set)
         self.controller.cw_on()
         self.emit_status(ThreadCommand('Update_Status',
-                        [f'CW frequency set to {freq_to_set.to(ureg.MHz)}.']))
+                [f'CW frequency set to {freq_to_set.to(ureg.MHz):.3f~P}.']))
 
 
     def move_home(self):
@@ -154,10 +164,9 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
 
     def stop_motion(self):
       """Turn off the MW signal"""
-      self.controller.off()  
+      self.controller.off()
       self.emit_status(ThreadCommand('Update_Status',
                                      ['MW output turned off.']))
-
 
 if __name__ == '__main__':
     main(__file__)

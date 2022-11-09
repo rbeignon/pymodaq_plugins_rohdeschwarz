@@ -8,11 +8,11 @@ Parts of this file were developed from the Qudi mw_source_smbv hardware module.
 Copyright (c) the Qudi Developers.
 """
 
-import visa
+import pyvisa as visa
 import numpy as np
 import time
 # shared UnitRegistry from pint initialized in __init__.py
-from . import ureg, Q_ 
+from pymodaq_plugins_rohdeschwarz import ureg, Q_ 
 
 class MWsource:
 
@@ -23,14 +23,18 @@ class MWsource:
         self._address = ""
         self._timeout = 1e4 * ureg.millisecond
 
-    @property
-    def address(self):
+    
+    def get_address(self):
         """Gets the visa address used to communicate with  the device.
+        
+        Returns
+        -------
+        str: the visa address currently set.
         """
         return self._address
 
-    @address.setter
-    def address(self, visa_address):
+    
+    def set_address(self, visa_address):
         """Set the visa address to communication with the device.
         Should be called before open_communication. Beware, it does not
         reset the connection, you have to do it otherwise the stored address
@@ -43,26 +47,54 @@ class MWsource:
         """
         self._address = visa_address
 
+
+    def get_timeout(self):
+        """Gets the visa address used to communicate with  the device.
+        
+        Returns
+        -------
+        pint Quantity (time): the communication timeout
+        """
+        return self._timeout
+
+    
+    def set_timeout(self, timeout):
+        """Set the timeout for communication with the device.
+        Should be called before open_communication. Beware, it does not
+        reset the connection, you have to do it if you want to change
+        the timeout parameter used by pyvisa.
+
+        Parameters
+        ----------
+        timeout: pint Quantity (time)
+           Timeout to set for communication with the device
+        """
+        self._timeout = timeout
+        
+
     @property
     def model(self):
         """Returns the ID string provided by the device.
         """
         return self._model
     
-    def open_communication(self):    
+    
+    def open_communication(self, address=None):    
         """Initiate the communication with the device.
         """
-
         self.rm = visa.ResourceManager()
+        if address is not None:
+            self.set_address(address)
+
         try:
             self._connection = self.rm.open_resource(self._address,
                                             timeout=self._timeout.magnitude)
+            self._model = self._connection.query("*IDN?").split(",")[1]
+            self._command_wait("*CLS")
+            self._command_wait("*RST")
         except:
             return False
 
-        self._model = self._connection.query("*IDN?").split(",")[1]
-        self._command_wait("*CLS")
-        self._command_wait("*RST")
         return True
     
 
@@ -239,7 +271,7 @@ class MWsource:
                 
         if current_mode != "list":
             self._command_wait(":FREQ:MODE LIST")
-            self._connection.write(":LIST:SEL "My_list"")
+            self._connection.write(':LIST:SEL "My_list"')
         self._command_wait(":OUTP:STAT ON")
         return
 
