@@ -19,7 +19,7 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
     controller: MWsource
         Instance of the class defined to communicate with the device.
     """
-    _controller_units = "Hz"
+    _controller_units = "MHz"
     is_multiaxes = False  
     axes_names = [] 
 
@@ -47,8 +47,8 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
             frequency = self.controller.get_frequency()
         else:
             self.emit_status("The device is not in CW mode!")
-            frequency = 0 * ureg.Hz
-        freq = self.get_position_with_scaling(frequency.to(ureg.Hz).magnitude)
+            frequency = 0 * ureg.MHz
+        freq = self.get_position_with_scaling(frequency.to(ureg.MHz).magnitude)
         return freq
 
     
@@ -119,7 +119,7 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
 
         Parameters
         ----------
-        value: (float) value of the absolute target frequency, in Hz
+        value: (float) value of the absolute target frequency, in MHz
         """
         # if user checked bounds, the defined bounds are applied here
         value = self.check_bound(value) 
@@ -127,12 +127,12 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         # apply scaling if the user specified one
         value = self.set_position_with_scaling(value)  
 
-        freq_to_set = value * ureg.Hz
+        freq_to_set = value * ureg.MHz
         self.controller.set_cw_params(frequency=freq_to_set)
         self.controller.cw_on()
         
         self.emit_status(ThreadCommand('Update_Status',
-                [f'CW frequency set to {freq_to_set.to(ureg.MHz):.3f~P}']))
+                [f'CW frequency set to {freq_to_set:.3f~P}']))
         
         self.target_position = value
 
@@ -143,18 +143,18 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
 
         Parameters
         ----------
-        value: (float) value of the relative target positioning frequency, in Hz
+        value: (float) value of the relative target positioning frequency, in MHz
         """
         value = self.check_bound(self.current_position + value) - \
             self.current_position
         self.target_value = value + self.current_position
         value = self.set_position_relative_with_scaling(value)
 
-        freq_to_set = self.target_value * ureg.Hz
+        freq_to_set = self.target_value * ureg.MHz
         self.controller.set_cw_params(frequency=freq_to_set)
         self.controller.cw_on()
         self.emit_status(ThreadCommand('Update_Status',
-                [f'CW frequency set to {freq_to_set.to(ureg.MHz):.3f~P}.']))
+                [f'CW frequency set to {freq_to_set:.3f~P}.']))
 
 
     def move_home(self):
