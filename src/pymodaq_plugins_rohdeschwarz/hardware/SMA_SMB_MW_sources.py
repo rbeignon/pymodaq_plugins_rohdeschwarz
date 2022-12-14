@@ -410,6 +410,15 @@ class MWsource:
         return
 
 
+    def reset_position(self):
+        """Reset the sweep/list."""
+        mode, is_running = self.get_status()
+        if mode == "sweep":
+            self.reset_sweep_position()
+        elif mode == "list":
+            self.reset_list_position()
+        return
+    
     def set_ext_trigger(self, trigger_edge):
         """Set the external trigger for sweep and list mode, specifying
         the proper edge (rising or falling).
