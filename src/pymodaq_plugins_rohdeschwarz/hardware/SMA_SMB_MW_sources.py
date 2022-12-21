@@ -399,7 +399,7 @@ class MWsource:
         self._command_wait("TRIG:FSW:SOUR EXT")
 
         sweep_freqs = self.get_frequency() # start, stop, step
-        return mode, sweeps_freqs[0], sweeps_freqs[1], sweeps_freqs[2], \
+        return mode, sweep_freqs[0], sweep_freqs[1], sweep_freqs[2], \
             self.get_power()
 
     
