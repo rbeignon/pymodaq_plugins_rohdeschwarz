@@ -1,4 +1,4 @@
-pymodaq_plugins_template (??? Instruments)
+pymodaq_plugins_rohdeschwarz (Rohde & Schwarz Instruments)
 ##########################################
 
 .. the following must be adapted to your developped package, links to pypi, github  description...
@@ -15,7 +15,7 @@ pymodaq_plugins_template (??? Instruments)
    :target: https://github.com/PyMoDAQ/pymodaq_plugins_thorlabs
    :alt: Publication Status
 
-Set of PyMoDAQ plugins for instruments from Rohde & Schwarz
+Set of PyMoDAQ plugins for instruments from Rohde & Schwarz.
 
 
 Authors
@@ -39,30 +39,5 @@ Below is the list of instruments included in this plugin
 Actuators
 +++++++++
 
-* **yyy**: control of yyy actuators
-* **xxx**: control of xxx actuators
+* RSMWsource: frequency control of microwave sources from SMA and SMB series
 
-Viewer0D
-++++++++
-
-* **yyy**: control of yyy 0D detector
-* **xxx**: control of xxx 0D detector
-
-Viewer1D
-++++++++
-
-* **yyy**: control of yyy 1D detector
-* **xxx**: control of xxx 1D detector
-
-
-Viewer2D
-++++++++
-
-* **yyy**: control of yyy 2D detector
-* **xxx**: control of xxx 2D detector
-
-
-Infos
-=====
-
-if needed for installation or other infos
