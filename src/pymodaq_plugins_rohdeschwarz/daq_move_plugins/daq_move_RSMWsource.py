@@ -21,7 +21,8 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
     """
     _controller_units = "MHz"
     is_multiaxes = False  
-    axes_names = [] 
+    axes_names = []
+    _epsilon = 0.01
 
     params = [  {'title': 'Address:', 'name': 'address', 'type': 'str',
                  'value': '', 'readonly': False},
