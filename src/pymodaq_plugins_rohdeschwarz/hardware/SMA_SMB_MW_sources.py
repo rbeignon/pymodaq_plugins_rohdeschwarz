@@ -268,11 +268,11 @@ class MWsource:
                 return 
             else:
                 self.off() # already running in another mode
-                
-        if current_mode != "list":
-            self._command_wait(":FREQ:MODE LIST")
-            self._connection.write(':LIST:SEL "My_list"')
+
         self._command_wait(":OUTP:STAT ON")
+        if current_mode != "list":
+            self._connection.write(':LIST:SEL "My_list"')
+            self._command_wait(":FREQ:MODE LIST")
         return
 
 
@@ -300,7 +300,7 @@ class MWsource:
         if frequency is not None and power is not None:
             if isinstance(power.magnitude, float) or \
                                       isinstance(power.magnitude, int):
-                power = power*np.ones(len(frequency))
+                power = [power]*len(frequency)
             if len(frequency) != len(power):
                 print("Number of frequencies and power values not matching!")
                 return
@@ -314,14 +314,16 @@ class MWsource:
             
             power_str = ""
             for p in power:
-                power_str += "{:.2f}, ".format(p.to(ureg.dBm).magnitude)
+                power_str += "{:.2f} dBm, ".format(p.to(ureg.dBm).magnitude)
             self._connection.write("LIST:POW {:s}".format(power_str[:-2]))
-
-        self._command_wait(":FREQ:MODE LIST")
+        
         # trigger each value in the list separately
         self._connection.write("LIST:MODE STEP")
         # external trigger
-        self._connection.write("LIST:TRIG:SOUR EXT") 
+        self._connection.write("LIST:TRIG:SOUR EXT")
+
+        self._command_wait(":OUTP:STAT ON")
+        self._command_wait(":FREQ:MODE LIST")
 
         # Return actually set values
         mode, is_running = self.get_status()
