@@ -35,7 +35,7 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
     data_actuator_type = DataActuatorType['DataActuator']  # wether you use the new data style for actuator otherwise set this
 
     params = [   {'title': 'Address:', 'name': 'address', 'type': 'str',
-                 'value': '', 'readonly': False},
+                 'value': 'ASRL3::INSTR', 'readonly': False},
                  {'title': 'Channel:', 'name': 'channel', 'type': 'int',
                  'value': 1}
                 ] + comon_parameters_fun(is_multiaxes, axis_names)
@@ -79,11 +79,6 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
         if param.name() == "address":
             self.controller.set_address(param.value())
 
-        if param.name() == "channel":
-           self.controller._set_channel(param.value())
-        else:
-            pass
-
     def ini_stage(self, controller=None):
         """Actuator communication initialization
 
@@ -125,7 +120,7 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
         self.target_value = value
         value = self.set_position_with_scaling(value)  # apply scaling if the user specified one
 
-        self.controller.set_control_value(value.value(), channel=3, ctrparam="VOLT")  # when writing your own plugin replace this line
+        self.controller.set_control_value(value.value(), channel=self.settings.child("channel").value(), ctrparam="VOLT")  # when writing your own plugin replace this line
         self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
 
     def move_rel(self, value: DataActuator):

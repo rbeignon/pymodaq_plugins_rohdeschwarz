@@ -18,21 +18,12 @@ class HMP2030():
     def open_communication(self, address=None):
         """ Startup the module """
 
-
-        #rm = pyvisa.ResourceManager()
-        #try:
-        #    self._inst = rm.open_resource(self._address)
-        #except pyvisa.VisaIOError:
-        #    pass
-
-
         self.rm = pyvisa.ResourceManager()
         if address is not None:
             self.set_address(address)
 
         try:
             self._inst = self.rm.open_resource(self._address)
-            #self._inst = self.rm.open_resource('ASRL3::INSTR')
         except:
             return False
 
