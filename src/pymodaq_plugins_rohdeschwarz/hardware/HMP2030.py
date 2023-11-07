@@ -1,4 +1,11 @@
+"""
+This file is the wrapper for power supply HMP from Rohde & Schwarz.
+Basic function have been tested on the models HMP2030.
+(open_communication(), close_communication(), set_control_value())
+This file is adapted from a Qudi hardware module
 
+Things concerning the error management should be modified.
+"""
 import pyvisa
 
 class HMP2030():

@@ -37,7 +37,7 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
     params = [   {'title': 'Address:', 'name': 'address', 'type': 'str',
                  'value': 'ASRL3::INSTR', 'readonly': False},
                  {'title': 'Channel:', 'name': 'channel', 'type': 'int',
-                 'value': 1}
+                 'value': 1},
                 ] + comon_parameters_fun(is_multiaxes, axis_names)
     #params = [    {'title': 'Channel:', 'name': 'channel', 'type': 'int',
     #             'value': 1}
@@ -97,9 +97,7 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
         self.controller = self.ini_stage_init(old_controller=controller,
                                               new_controller=HMP2030())
 
-        info = "Whatever info you want to log"
-        #initialized = self.controller.open_communication()
-        print(self.settings.child("address").value())
+        info = "Initializing HMP2030"
         initialized = self.controller.open_communication(
             address=self.settings.child("address").value())
         if initialized:
