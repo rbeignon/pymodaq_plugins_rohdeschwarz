@@ -33,16 +33,15 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
     axis_names = []
     _epsilon = 0.01
     data_actuator_type = DataActuatorType['DataActuator']  # wether you use the new data style for actuator otherwise set this
-    # as  DataActuatorType['float']  (or entirely remove the line)
 
-    #params = [   {'title': 'Address:', 'name': 'address', 'type': 'str',
-    #             'value': '', 'readonly': False},
-    #             {'title': 'Channel:', 'name': 'channel', 'type': 'int',
-    #             'value': 1}
-    #            ] + comon_parameters_fun(is_multiaxes, axis_names)
-    params = [    {'title': 'Channel:', 'name': 'channel', 'type': 'int',
+    params = [   {'title': 'Address:', 'name': 'address', 'type': 'str',
+                 'value': '', 'readonly': False},
+                 {'title': 'Channel:', 'name': 'channel', 'type': 'int',
                  'value': 1}
                 ] + comon_parameters_fun(is_multiaxes, axis_names)
+    #params = [    {'title': 'Channel:', 'name': 'channel', 'type': 'int',
+    #             'value': 1}
+    #            ] + comon_parameters_fun(is_multiaxes, axis_names)
     # _epsilon is the initial default value for the epsilon parameter allowing pymodaq to know if the controller reached
     # the target value. It is the developer responsibility to put here a meaningful value
 
@@ -77,8 +76,8 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
         param: Parameter
             A given parameter (within detector_settings) whose value has been changed by the user
         """
-        #if param.name() == "address":
-        #    self.controller.set_address(param.value())
+        if param.name() == "address":
+            self.controller.set_address(param.value())
 
         if param.name() == "channel":
            self.controller._set_channel(param.value())
@@ -104,11 +103,13 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
                                               new_controller=HMP2030())
 
         info = "Whatever info you want to log"
-        initialized = self.controller.open_communication()
-        #print(self.settings.child("address").value())
-        #initialized = .controller.open_communication(
-        #    address=self.settings.child("address").value())
-
+        #initialized = self.controller.open_communication()
+        print(self.settings.child("address").value())
+        initialized = self.controller.open_communication(
+            address=self.settings.child("address").value())
+        if initialized:
+            self.settings.child("address").setValue(
+                self.controller.get_address())
 
         return info, initialized
 

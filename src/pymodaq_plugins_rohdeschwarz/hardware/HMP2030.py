@@ -4,7 +4,7 @@ import pyvisa
 class HMP2030():
 
     _model = ""
-    _address = 'ASRL3::INSTR'
+    _address = ''
     _modclass = 'PowerSupply'
     _modtype = 'hardware'
     _inst = None
@@ -19,22 +19,22 @@ class HMP2030():
         """ Startup the module """
 
 
-        rm = pyvisa.ResourceManager()
+        #rm = pyvisa.ResourceManager()
+        #try:
+        #    self._inst = rm.open_resource(self._address)
+        #except pyvisa.VisaIOError:
+        #    pass
+
+
+        self.rm = pyvisa.ResourceManager()
+        if address is not None:
+            self.set_address(address)
+
         try:
-            self._inst = rm.open_resource(self._address)
-        except pyvisa.VisaIOError:
-            pass
-
-
-        # self.rm = visa.ResourceManager()
-        # if address is not None:
-        #     self.set_address(address)
-        #
-        # try:
-        #     self._inst = self.rm.open_resource(self._address)
-        #     #self._inst = self.rm.open_resource('ASRL3::INSTR')
-        # except:
-        #     return False
+            self._inst = self.rm.open_resource(self._address)
+            #self._inst = self.rm.open_resource('ASRL3::INSTR')
+        except:
+            return False
 
         return True
 
@@ -152,6 +152,15 @@ class HMP2030():
             Visa address of the device
         """
         self._address = visa_address
+
+    def get_address(self):
+        """Gets the visa address used to communicate with  the device.
+
+        Returns
+        -------
+        str: the visa address currently set.
+        """
+        return self._address
 
     def set_control_value(self, value, channel=1, ctrparam="VOLT"):
         """ Set control value
