@@ -32,6 +32,7 @@ class HMP2030():
         try:
             self._inst = self.rm.open_resource(self._address)
         except:
+            self.log.error('Could not connect to hardware. Please check the wires and the address.')
             return False
 
         return True
@@ -134,7 +135,7 @@ class HMP2030():
         """ Sets the over current protection for a selected channel"""
         if channel is not None:
             self._set_channel(channel)
-        self._inst.write('FUSE ON')
+        self._inst.write('FUSE ON') # The FUSE is never set off ?
         self._inst.write('CURR {}'.format(maxi))
 
 # Interface methods
