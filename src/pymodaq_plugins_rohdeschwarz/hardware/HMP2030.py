@@ -7,8 +7,13 @@ This file is adapted from a Qudi hardware module
 Things concerning the error management should be modified.
 """
 import pyvisa
+from pymodaq.utils.logger import set_logger, get_module_name
 
-class HMP2030():
+logger = set_logger(get_module_name(__file__))
+
+
+class HMP2030:
+
 
     _model = ""
     _address = ''
@@ -32,7 +37,7 @@ class HMP2030():
         try:
             self._inst = self.rm.open_resource(self._address)
         except:
-            self.log.error('Could not connect to hardware. Please check the wires and the address.')
+            logger.error('Could not connect to hardware. Please check the wires and the address.')
             return False
 
         return True
@@ -47,8 +52,8 @@ class HMP2030():
         if channel in [1, 2, 3]:
             self._inst.write('INST OUT{}'.format(channel))
         else:
-            self.log.error('Wrong channel number. Chose 1, 2 or 3.')
-    
+            logger.error('Wrong channel number. Chose 1, 2 or 3.')
+
     def _get_channel(self):
         """ query the selected channel"""
         channel = int(self._inst.query('INST:NSEL?'))
@@ -68,8 +73,8 @@ class HMP2030():
         if mini <= value <= maxi:
             self._inst.write("VOLT {}".format(value))
         else:
-            self.log.error('Voltage value {} out of range'.format(value))
-    
+            logger.error('Voltage value {} out of range'.format(value))
+
     def _get_voltage(self, channel=None):
         """ Get the measured the voltage """
         if channel is not None:
@@ -84,7 +89,7 @@ class HMP2030():
         if mini <= value <= maxi:
             self._inst.write("CURR {}".format(value))
         else:
-            self.log.error('Current value {} out of range'.format(value))
+            logger.error('Current value {} out of range'.format(value))
 
     def _get_current(self, channel=None):
         """ Get the measured the current  """
@@ -174,7 +179,7 @@ class HMP2030():
         if mini <= value <= maxi:
             self._inst.write("{} {}".format(ctrparam, value))
         else:
-            self.log.error('Control value {} out of range'.format(value))
+            logger.error('Control value {} out of range'.format(value))
 
     def get_control_value(self, ctrparam="VOLT"):
         """ Get current control value, here heating power
@@ -221,3 +226,25 @@ class HMP2030():
     def process_control_get_number_channels(self):
         """ Function to get the number of channels available for control """
         return 3
+
+    def get_timeout(self):
+        """Gets the visa address used to communicate with  the device.
+
+        Returns
+        -------
+        pint Quantity (time): the communication timeout
+        """
+        return self._timeout
+
+    def set_timeout(self, timeout):
+        """Set the timeout for communication with the device.
+        Should be called before open_communication. Beware, it does not
+        reset the connection, you have to do it if you want to change
+        the timeout parameter used by pyvisa.
+
+        Parameters
+        ----------
+        timeout: pint Quantity (time)
+           Timeout to set for communication with the device
+        """
+        self._timeout = timeout

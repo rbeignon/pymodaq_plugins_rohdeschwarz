@@ -1,10 +1,12 @@
-from pymodaq.control_modules.move_utility_classes import DAQ_Move_base, comon_parameters_fun, main, DataActuatorType,\
+from pymodaq.control_modules.move_utility_classes import DAQ_Move_base, comon_parameters_fun, main, DataActuatorType, \
     DataActuator  # common set of parameters for all actuators
-from pymodaq.utils.daq_utils import ThreadCommand # object used to send info back to the main thread
+from pymodaq.utils.daq_utils import ThreadCommand  # object used to send info back to the main thread
 from pymodaq.utils.parameter import Parameter
 
 from pymodaq_plugins_rohdeschwarz.hardware.HMP2030 import HMP2030
-#from pymeasure import HMP4040
+
+
+# from pymeasure import HMP4040
 
 class DAQ_Move_HMP2030(DAQ_Move_base):
     """ Instrument plugin class for an actuator.
@@ -28,18 +30,18 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
     # TODO add your particular attributes here if any
 
     """
-    _controller_units = 'Volts'
+    _controller_units = 'V'
     is_multiaxes = False
-    axis_names = []
+    axes_names = []
     _epsilon = 0.01
-    data_actuator_type = DataActuatorType['DataActuator']  # wether you use the new data style for actuator otherwise set this
 
-    params = [   {'title': 'Address:', 'name': 'address', 'type': 'str',
-                 'value': 'ASRL3::INSTR', 'readonly': False},
-                 {'title': 'Channel:', 'name': 'channel', 'type': 'int',
-                 'value': 1},
-                ] + comon_parameters_fun(is_multiaxes, axis_names)
-    #params = [    {'title': 'Channel:', 'name': 'channel', 'type': 'int',
+    params = [{'title': 'Address:', 'name': 'address', 'type': 'str',
+               'value': 'ASRL3::INSTR', 'readonly': False},
+              {'title': 'Channel:', 'name': 'channel', 'type': 'int',
+               'value': 1},
+              ] + comon_parameters_fun(is_multiaxes, axes_names, epsilon=_epsilon)
+
+    # params = [    {'title': 'Channel:', 'name': 'channel', 'type': 'int',
     #             'value': 1}
     #            ] + comon_parameters_fun(is_multiaxes, axis_names)
     # _epsilon is the initial default value for the epsilon parameter allowing pymodaq to know if the controller reached
@@ -59,7 +61,8 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
         float: The position obtained after scaling conversion.
         """
 
-        pos = DataActuator(data=self.controller.get_control_value("Volt"))  # when writing your own plugin replace this line
+        pos = DataActuator(
+            data=self.controller.get_control_value("Volt"))  # when writing your own plugin replace this line
         pos = self.get_position_with_scaling(pos)
         return pos
 
@@ -106,20 +109,20 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
 
         return info, initialized
 
-    def move_abs(self, value: DataActuator):
+    def move_abs(self, value):
         """ Move the actuator to the absolute target defined by value
 
         Parameters
         ----------
         value: (float) value of the absolute target positioning
         """
-
-        value = self.check_bound(value)  #if user checked bounds, the defined bounds are applied here
+        value = self.check_bound(value)  # if user checked bounds, the defined bounds are applied here
         self.target_value = value
         value = self.set_position_with_scaling(value)  # apply scaling if the user specified one
-
-        self.controller.set_control_value(value.value(), channel=self.settings.child("channel").value(), ctrparam="VOLT")  # when writing your own plugin replace this line
-        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+        in_range = self.controller.set_control_value(value, channel=self.settings.child("channel").value(),
+                                                    ctrparam="VOLT")
+        if not in_range:
+            self.stop_motion()
 
     def move_rel(self, value: DataActuator):
         """ Move the actuator to the relative target actuator value defined by value
@@ -134,7 +137,7 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
 
         ## TODO for your custom plugin
         raise NotImplemented  # when writing your own plugin remove this line
-        self.controller.your_method_to_set_a_relative_value(value.value())  # when writing your own plugin replace this line
+        self.controller.your_method_to_set_a_relative_value(value)  # when writing your own plugin replace this line
         self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
 
     def move_home(self):
@@ -146,12 +149,10 @@ class DAQ_Move_HMP2030(DAQ_Move_base):
         self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
 
     def stop_motion(self):
-      """Stop the actuator and emits move_done signal"""
+        """Stop the actuator and emits move_done signal"""
 
-      ## TODO for your custom plugin
-      raise NotImplemented  # when writing your own plugin remove this line
-      self.controller.your_method_to_stop_positioning()  # when writing your own plugin replace this line
-      self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+        ## TODO for your custom plugin
+        self.emit_status(ThreadCommand('Move failed'))
 
 
 if __name__ == '__main__':
