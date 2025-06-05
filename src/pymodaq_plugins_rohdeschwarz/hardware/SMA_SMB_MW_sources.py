@@ -317,9 +317,16 @@ class MWsource:
                 freq_str += "{:.6f~P}, ".format(freq.to(ureg.GHz))
             self._connection.write("LIST:FREQ {:s}".format(freq_str[:-2]))
 
-            power_str = "{:.2f}dBm".format(power.to(ureg.dBm).magnitude)
+            if type(power) == list:
+                power_str = ""
+                for pow in power:
+                    power_str += "{:.2f}dBm, ".format(pow.to(ureg.dBm).magnitude)
 
-            self._connection.write("LIST:POW {:s}".format(power_str))
+                self._connection.write("LIST:POW {:s}".format(power_str[:-2]))
+
+            else:
+                power_str = "{:.2f}dBm".format(power.to(ureg.dBm).magnitude)
+                self._connection.write("LIST:POW {:s}".format(power_str))
 
         # trigger each value in the list separately
         self._connection.write("LIST:MODE STEP")
