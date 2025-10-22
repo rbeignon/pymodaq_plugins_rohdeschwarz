@@ -19,6 +19,7 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
     controller: MWsource
         Instance of the class defined to communicate with the device.
     """
+
     _controller_units = "Hz"
     is_multiaxes = False  
     axes_names = []
