@@ -2,8 +2,8 @@
 from pymodaq.control_modules.move_utility_classes import DAQ_Move_base, \
     comon_parameters_fun, main  
 # object used to send info back  to the main thread
-from pymodaq.utils.daq_utils import ThreadCommand
-from pymodaq.utils.parameter import Parameter
+from pymodaq.daq_utils.daq_utils import ThreadCommand
+from pymodaq.daq_utils.parameter import Parameter
 # shared UnitRegistry from pint initialized in __init__.py
 from pymodaq_plugins_rohdeschwarz import ureg, Q_
 from pymodaq_plugins_rohdeschwarz.hardware.SMA_SMB_MW_sources import MWsource
@@ -35,7 +35,6 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
     def ini_attributes(self):
         self.controller: MWsource = None
 
-    
     def get_actuator_value(self):
         """Get the current value of the CW frequency from the hardware.
         Sends 0 if we are not in CW mode.
@@ -52,13 +51,11 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
             frequency = 0 * ureg.Hz
         freq = self.get_position_with_scaling(frequency.to(ureg.Hz).magnitude)
         return freq
-
-    
+ 
     def close(self):
         """Terminate the communication protocol.
         """
         self.controller.close_communication()  
-
         
     def commit_settings(self, param: Parameter):
         """Apply the consequences of a change of value in the device settings
@@ -77,8 +74,7 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         # timeout if in comon_parameters
         elif param.name() == "timeout":
             timeout_to_set = Q_(param.value(), ureg.second)
-            self.controller.set_timeout(timeout=timeout_to_set) 
-        
+            self.controller.set_timeout(timeout=timeout_to_set)        
 
     def ini_stage(self, controller=None):
         """Communication initialization.
@@ -114,7 +110,6 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
              self.controller.get_timeout().to(ureg.second).magnitude)
             
         return info, initialized
-
     
     def move_abs(self, value):
         """ Move the actuator to the absolute target defined by value.
@@ -138,7 +133,6 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         
         self.target_position = value
 
-
     def move_rel(self, value):
         """ Move the actuator to the relative target actuator value
         defined by value
@@ -158,12 +152,10 @@ class DAQ_Move_RSMWsource(DAQ_Move_base):
         self.emit_status(ThreadCommand('Update_Status',
                 [f'CW frequency set to {freq_to_set:.3f~P}.']))
 
-
     def move_home(self):
         """Does nothing, there is no specific home value."""
         pass
         
-
     def stop_motion(self):
       """Turn off the MW signal"""
       self.controller.off()
