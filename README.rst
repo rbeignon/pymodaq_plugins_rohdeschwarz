@@ -22,6 +22,7 @@ Authors
 =======
 
 * Aurore Finco  (aurore.finco@umontpellier.fr)
+* Roméo Beignon (romeo.beignon@umontpellier.fr)
 
 .. if needed use this field
 
@@ -40,4 +41,5 @@ Actuators
 +++++++++
 
 * RSMWsource: frequency control of microwave sources from SMA and SMB series
+* Power Supply - HMP 2030
 
