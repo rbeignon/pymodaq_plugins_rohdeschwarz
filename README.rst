@@ -40,6 +40,9 @@ Below is the list of instruments included in this plugin
 Actuators
 +++++++++
 
-* RSMWsource: frequency control of microwave sources from SMA and SMB series
-* Power Supply - HMP 2030
+* **SMA/SMB**: control of microwave sources from Rohde&Schwarz
+* **HMP2030**: control of voltage source from Rohde&Schwarz
 
+
+Infos
+=====
