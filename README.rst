@@ -1,4 +1,4 @@
-pymodaq_plugins_template (??? Instruments)
+pymodaq_plugins_rohdeschwarz (Rohde & Schwarz Instruments)
 ##########################################
 
 .. the following must be adapted to your developped package, links to pypi, github  description...
@@ -15,13 +15,14 @@ pymodaq_plugins_template (??? Instruments)
    :target: https://github.com/PyMoDAQ/pymodaq_plugins_thorlabs
    :alt: Publication Status
 
-Set of PyMoDAQ plugins for instruments from Rohde & Schwarz
+Set of PyMoDAQ plugins for instruments from Rohde & Schwarz.
 
 
 Authors
 =======
 
 * Aurore Finco  (aurore.finco@umontpellier.fr)
+* Roméo Beignon (romeo.beignon@umontpellier.fr)
 
 .. if needed use this field
 
