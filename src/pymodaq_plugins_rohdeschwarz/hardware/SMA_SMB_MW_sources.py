@@ -129,6 +129,9 @@ class MWsource:
             return 
 
         self._command_wait("OUTP:STAT OFF")
+        self._connection.write('*WAI')
+        while int(float(self._connection.query('OUTP:STAT?'))) != 0:
+            time.sleep(0.2)
         return 
 
 
@@ -265,14 +268,16 @@ class MWsource:
         current_mode, is_running = self.get_status()
         if is_running:
             if current_mode == "list": # List mode already on
-                return 
+                return
             else:
                 self.off() # already running in another mode
-                
+
+
+        self._command_wait(":OUTP:STAT ON")
         if current_mode != "list":
             self._command_wait(":FREQ:MODE LIST")
             self._connection.write(':LIST:SEL "My_list"')
-        self._command_wait(":OUTP:STAT ON")
+
         return
 
 
@@ -298,12 +303,12 @@ class MWsource:
         if is_running:
             self.off()
         if frequency is not None and power is not None:
-            if isinstance(power.magnitude, float) or \
-                                      isinstance(power.magnitude, int):
-                power = power*np.ones(len(frequency))
-            if len(frequency) != len(power):
-                print("Number of frequencies and power values not matching!")
-                return
+            #if isinstance(power.magnitude, float) or \
+            #                          isinstance(power.magnitude, int):
+            #    power = [power]*len(frequency)
+            #if len(power) > 1 and len(frequency) != len(power):
+            #    print("Number of frequencies and power values not matching!")
+            #    return
             
             self._connection.write(':LIST:SEL "My_list"')
 
@@ -311,17 +316,26 @@ class MWsource:
             for freq in frequency:
                 freq_str += "{:.6f~P}, ".format(freq.to(ureg.GHz))
             self._connection.write("LIST:FREQ {:s}".format(freq_str[:-2]))
-            
-            power_str = ""
-            for p in power:
-                power_str += "{:.2f}, ".format(p.to(ureg.dBm).magnitude)
-            self._connection.write("LIST:POW {:s}".format(power_str[:-2]))
 
-        self._command_wait(":FREQ:MODE LIST")
+            if type(power) == list:
+                power_str = ""
+                for pow in power:
+                    power_str += "{:.2f}dBm, ".format(pow.to(ureg.dBm).magnitude)
+
+                self._connection.write("LIST:POW {:s}".format(power_str[:-2]))
+
+            else:
+                power_str = "{:.2f}dBm".format(power.to(ureg.dBm).magnitude)
+                self._connection.write("LIST:POW {:s}".format(power_str))
+
         # trigger each value in the list separately
         self._connection.write("LIST:MODE STEP")
+
         # external trigger
-        self._connection.write("LIST:TRIG:SOUR EXT") 
+        self._connection.write("LIST:TRIG:SOUR EXT")
+        self._command_wait(":OUTP:STAT ON")
+
+        self._command_wait(":FREQ:MODE LIST")
 
         # Return actually set values
         mode, is_running = self.get_status()
@@ -386,20 +400,23 @@ class MWsource:
         if start is not None and stop is not None and step is not None:
             self._command_wait(":SWE:MODE STEP")
             self._command_wait(":SWE:SPAC LIN")
+            self._connection.write('*WAI') #wait command ???
             self._command_wait(":FREQ:START {:.6f~P}".format(
                 (start - step).to(ureg.GHz)))
             self._command_wait(":FREQ:STOP {:.6f~P}".format(stop.to(ureg.GHz)))
             self._command_wait(":SWE:STEP:LIN {:.6f~P}".format(
                 step.to(ureg.GHz)))
+            self._connection.write('*WAI') #wait command ???
             
         if power is not None:
             self._command_wait(":POW {:.2f}".format(
                 power.to(ureg.dBm).magnitude))
+            self._connection.write('*WAI')  # wait command ???
 
         self._command_wait("TRIG:FSW:SOUR EXT")
 
         sweep_freqs = self.get_frequency() # start, stop, step
-        return mode, sweeps_freqs[0], sweeps_freqs[1], sweeps_freqs[2], \
+        return mode, sweep_freqs[0], sweep_freqs[1], sweep_freqs[2], \
             self.get_power()
 
     
