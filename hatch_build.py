@@ -6,5 +6,5 @@ here = Path(__file__).absolute().parent
 
 
 class PluginInfoTomlHook(MetadataHookInterface):
-    def update(self, metadata: dict):
+    def update(self, metadata: dict) -> None:
         update_metadata_from_toml(metadata, here)
